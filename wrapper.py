@@ -6,6 +6,11 @@ class Node(object):
     """
     def __init__(self, parents):
         self.parents = parents
+        self.func = None
+        self.value = None
+        self.args = []
+        self.kwargs = {}
+        self.parent_argnums = []
 
 
 class Wrapper(object):

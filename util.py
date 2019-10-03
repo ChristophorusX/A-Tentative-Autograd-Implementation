@@ -23,7 +23,7 @@ def topological_sort(propagation_end_node):
     stack.append(propagation_end_node)
     childness_nodes.append(propagation_end_node)
     # Counting the number of children of each node where the direction of the
-    # graph is the same as the direction of the propagation
+    # edges is the same as the direction of the propagation
     while stack:
         node = stack.pop()
         if node in counting_dict:
