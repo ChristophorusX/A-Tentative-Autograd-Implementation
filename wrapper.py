@@ -2,7 +2,7 @@
 
 class Node(object):
     """
-    This class represents a node in the graph.
+    This is a dummy class to be overridden.
     """
     def __init__(self):
         pass
