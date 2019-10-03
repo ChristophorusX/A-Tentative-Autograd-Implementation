@@ -4,8 +4,8 @@ class Node(object):
     """
     This is a dummy class to be overridden.
     """
-    def __init__(self):
-        pass
+    def __init__(self, parents):
+        self.parents = parents
 
 
 class Wrapper(object):
