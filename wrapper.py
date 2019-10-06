@@ -12,6 +12,10 @@ class Node(object):
         self.kwargs = {}
         self.parent_argnums = []
 
+    @classmethod
+    def new_root():
+        pass
+
 
 class Wrapper(object):
     """

@@ -1,5 +1,6 @@
 from collections import defaultdict
 from wrapper import Node, Wrapper
+import numpy as np
 from util import topological_sort
 
 def backpropagation(gradient, propagation_end_node):
@@ -37,6 +38,55 @@ def backpropagation(gradient, propagation_end_node):
                 gradient_dict[parent] = gradient_parent
     return gradient
 
+
+def forward_propagation(propagation_start_node, func, args):
+    """A forward propagation starting at the `propagation_start_node` and
+    wrapping the all the composition operations along the way.
+
+    Parameters
+    ----------
+    propagation_start_node : type
+        Description of parameter `propagation_start_node`.
+    func : type
+        Description of parameter `func`.
+    args : type
+        Description of parameter `args`.
+
+    Returns
+    -------
+    type
+        Description of returned object.
+
+    """
+    args = list(args)
+
+
+def vector_jacobian_product_factory(func, x):
+    """A factory that produces a vector jacobian product of a given node with
+    a function `func` at variables `x`.
+
+    Parameters
+    ----------
+    func : function
+        A function specified at the given node.
+    x : narray
+        A set of variables at which the function `func` is evaluated.
+
+    Returns
+    -------
+    function
+        A vector jacobian product function with parameter `gradient`.
+
+    """
+    current_node = Node.new_root()
+    # Propogating through the graph and finding the end node
+    propagation_end_node, propogation_end_value = forward_propagation(current_node, func, x)
+    # If the end node has no relationship to the current node, gradient is 0
+    # Otherwise, the vector_jacobian_product is produced by backpropagation
+    if propagation_end_node is None:
+        return lambda gradient: np.zeros_like(x)
+    else:
+        return lambda gradient: backpropagation(gradient, propagation_end_node)
 
 
 class VectorJacobianProductNode(Node):
