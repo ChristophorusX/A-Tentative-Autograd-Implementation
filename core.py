@@ -23,7 +23,6 @@ def backpropagation(gradient, propagation_end_node):
     gradient_dict = {}
     # Starting with an end node on propagation map and traversing the
     # backpropagation graph
-    gradient = None
     gradient_dict[propagation_end_node] = gradient
     for node in topological_sort(propagation_end_node):
         gradient = gradient_dict.pop(node)
