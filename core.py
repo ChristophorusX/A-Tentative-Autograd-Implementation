@@ -31,6 +31,7 @@ def backpropagation(gradient, propagation_end_node):
         for parent in node.parents:
             vector_jacobian_product = primative_vec_jac_prods[node.func]
             parent_gradient = vector_jacobian_product(current_gradient, node.value)
+            # Handle the fan-out nodes
             previous_parent_gradient = gradient_dict.get(parent)
             if previous_parent_gradient:
                 gradient_dict[parent] = parent_gradient + previous_parent_gradient
