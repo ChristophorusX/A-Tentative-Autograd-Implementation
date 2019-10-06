@@ -24,18 +24,19 @@ def backpropagation(gradient, propagation_end_node):
     # Starting with an end node on propagation map and traversing the
     # backpropagation graph
     gradient_dict[propagation_end_node] = gradient
+    current_gradient = None
     for node in topological_sort(propagation_end_node):
-        gradient = gradient_dict.pop(node)
+        current_gradient = gradient_dict.pop(node)
         # Compute the gradient of every parent
         for parent in node.parents:
             vector_jacobian_product = primative_vec_jac_prods[node.func]
-            gradient_parent = vector_jacobian_product(gradient, node.value)
-            previous_gradient = gradient_dict.get(parent)
-            if previous_gradient:
-                gradient_dict[parent] = gradient_parent + previous_gradient
+            parent_gradient = vector_jacobian_product(current_gradient, node.value)
+            previous_parent_gradient = gradient_dict.get(parent)
+            if previous_parent_gradient:
+                gradient_dict[parent] = parent_gradient + previous_parent_gradient
             else:
-                gradient_dict[parent] = gradient_parent
-    return gradient
+                gradient_dict[parent] = parent_gradient
+    return current_gradient
 
 
 def forward_propagation(propagation_start_node, func, args):
@@ -97,4 +98,4 @@ class JacobianVectorProductNode(Node):
 # Defaultdict is not going to throw an error when accessing a key that is not
 # in the dictionary, rather it will just create an item with the default value,
 # which is convenient.
-primative_vec_jac_prods = defaultdict(dict)
+primative_vec_jac_prods = defaultdict()
