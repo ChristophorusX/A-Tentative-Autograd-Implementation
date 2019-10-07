@@ -40,3 +40,14 @@ def topological_sort(propagation_end_node):
                 childness_nodes.append(parent)
             else:
                 counting_dict[parent] -= 1
+
+def substitute_values(x, index_value_pairs):
+    x_list = list(x)
+    for i, v in index_value_pairs:
+        x_list[i] = v
+    return tuple(x_list)
+
+def substitute_value(x, index, value):
+    x_list = list(x)
+    x_list[index] = value
+    return tuple(x_list)

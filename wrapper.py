@@ -1,4 +1,4 @@
-
+from util import substitute_values
 
 class Node(object):
     """
@@ -65,7 +65,7 @@ def primative():
         wrapped_args, trace, node_constructor = backtrace_top_wrapped_args(args)
         if wrapped_args:
             num_value_pair = [(argnum, wrapper._value) for argnum, wrapper in wrapped_args]
-            argvals = subvals(args, num_value_pair)
+            argvals = substitute_values(args, num_value_pair)
             if function_wrapped in notrace_primitives[node_constructor]:
                 return function_wrapped(*argvals, **kwargs)
             parents = tuple(wrapper._node for _, wrapper in wrapped_args)
