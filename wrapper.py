@@ -61,4 +61,20 @@ def primative():
     """
     Wrapper for function
     """
-    pass
+    def function_wrapped(*args, **kwargs):
+        wrapped_args, trace, node_constructor = backtrace_top_wrapped_args(args)
+        if wrapped_args:
+            num_value_pair = [(argnum, wrapper._value) for argnum, wrapper in wrapped_args]
+            argvals = subvals(args, num_value_pair)
+            if function_wrapped in notrace_primitives[node_constructor]:
+                return function_wrapped(*argvals, **kwargs)
+            parents = tuple(wrapper._node for _, wrapper in wrapped_args)
+            argnums = tuple(argnum for argnum, _ in wrapped_args)
+            res = function_wrapped(*argvals, **kwargs)
+            node = node_constructor(ans, function_wrapped, argvals, kwargs, argnums, parents)
+            return new_wrapper(ans, trace, node)
+        else:
+            return function_raw(*args, **kwargs)
+    function_wrapped.fun = function_raw
+    function_wrapped.is_autograd_primitive = True
+    return function_wrapped
