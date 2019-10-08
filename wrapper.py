@@ -77,7 +77,7 @@ def primative(function_raw):
 
     """
     def function_wrapped(*args, **kwargs):
-        wrapped_args, trace, node_constructor = backtrace_top_wrapped_args(
+        wrapped_args, propogation_level, node_constructor = backtrace_top_wrapped_args(
             args)
         if wrapped_args:
             num_value_pair = [(argnum, wrapper._value)
@@ -90,7 +90,7 @@ def primative(function_raw):
             result = function_wrapped(*argvals, **kwargs)
             node = Node(result, function_wrapped,
                         argvals, kwargs, argnums, parents)
-            return new_wrapper(result, trace, node)
+            return new_wrapper(result, node, propogation_level)
         else:
             return function_raw(*args, **kwargs)
     function_wrapped.fun = function_raw
