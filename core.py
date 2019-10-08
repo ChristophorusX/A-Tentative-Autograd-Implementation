@@ -3,6 +3,7 @@ from wrapper import Node, Wrapper
 import numpy as np
 from util import topological_sort
 
+
 def backpropagation(gradient, propagation_end_node):
     """A backpropagation function that computes the gradients up to the
     propagation_end_node.
@@ -30,11 +31,13 @@ def backpropagation(gradient, propagation_end_node):
         # Compute the gradient of every parent
         for parent in node.parents:
             vector_jacobian_product = primative_vec_jac_prods[node.func]
-            parent_gradient = vector_jacobian_product(current_gradient, node.value)
+            parent_gradient = vector_jacobian_product(
+                current_gradient, node.value)
             # Handle the fan-out nodes
             previous_parent_gradient = gradient_dict.get(parent)
             if previous_parent_gradient:
-                gradient_dict[parent] = parent_gradient + previous_parent_gradient
+                gradient_dict[parent] = parent_gradient + \
+                    previous_parent_gradient
             else:
                 gradient_dict[parent] = parent_gradient
     return current_gradient
@@ -81,7 +84,8 @@ def vector_jacobian_product_factory(func, x):
     """
     current_node = Node.new_root()
     # Propogating through the graph and finding the end node
-    propagation_end_node, propogation_end_value = forward_propagation(current_node, func, x)
+    propagation_end_node, propogation_end_value = forward_propagation(
+        current_node, func, x)
     # If the end node has no relationship to the current node, gradient is 0
     # Otherwise, the vector_jacobian_product is produced by backpropagation
     if propagation_end_node is None:
@@ -92,6 +96,7 @@ def vector_jacobian_product_factory(func, x):
 
 class VectorJacobianProductNode(Node):
     pass
+
 
 class JacobianVectorProductNode(Node):
     pass

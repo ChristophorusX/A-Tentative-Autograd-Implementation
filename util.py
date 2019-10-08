@@ -1,5 +1,6 @@
 from wrapper import Node
 
+
 def topological_sort(propagation_end_node):
     """A utility function to perform a topological sort on a DAG starting from
     the node to perform backpropagation.
@@ -41,11 +42,13 @@ def topological_sort(propagation_end_node):
             else:
                 counting_dict[parent] -= 1
 
+
 def substitute_values(x, index_value_pairs):
     x_list = list(x)
     for i, v in index_value_pairs:
         x_list[i] = v
     return tuple(x_list)
+
 
 def substitute_value(x, index, value):
     x_list = list(x)

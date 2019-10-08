@@ -1,5 +1,6 @@
 from util import substitute_values
 
+
 class Node(object):
     """
     This is a dummy class to be overridden.
@@ -29,12 +30,15 @@ class Wrapper(object):
     """
     Equivalent to the Box class in the Autograd implementation.
     """
-    def __init__(self, value, node):
+
+    def __init__(self, value, node, propogation_level):
         self._value = value
         self._node = node
+        self._propogation_level = propogation_level
 
     def __bool__(self):
         return self._value
+
 
 def new_wrapper(value, propogation_level, node):
     """A function that returns a wrapper of certain data type. (TODO)
@@ -73,16 +77,19 @@ def primative(function_raw):
 
     """
     def function_wrapped(*args, **kwargs):
-        wrapped_args, trace, node_constructor = backtrace_top_wrapped_args(args)
+        wrapped_args, trace, node_constructor = backtrace_top_wrapped_args(
+            args)
         if wrapped_args:
-            num_value_pair = [(argnum, wrapper._value) for argnum, wrapper in wrapped_args]
+            num_value_pair = [(argnum, wrapper._value)
+                              for argnum, wrapper in wrapped_args]
             argvals = substitute_values(args, num_value_pair)
             if function_wrapped in notrace_primitives[node_constructor]:
                 return function_wrapped(*argvals, **kwargs)
             parents = tuple(wrapper._node for _, wrapper in wrapped_args)
             argnums = tuple(argnum for argnum, _ in wrapped_args)
             result = function_wrapped(*argvals, **kwargs)
-            node = Node(result, function_wrapped, argvals, kwargs, argnums, parents)
+            node = Node(result, function_wrapped,
+                        argvals, kwargs, argnums, parents)
             return new_wrapper(result, trace, node)
         else:
             return function_raw(*args, **kwargs)
@@ -90,12 +97,13 @@ def primative(function_raw):
     function_wrapped.is_autograd_primitive = True
     return function_wrapped
 
+
 def notrace_primitive(function_raw):
     """A wrapper function that evaluates with wrapped arguments.
 
     Parameters
     ----------
-    function_raw : type
+    function_raw : function
         A raw function to be wrapped.
 
     Returns
@@ -106,7 +114,34 @@ def notrace_primitive(function_raw):
     """
     def function_wrapped(*args, **kwargs):
         def get_value(x):
-            return get_value(x._value) if isinstance(x,Wrapper) else x
+            return get_value(x._value) if isinstance(x, Wrapper) else x
         argvals = map(get_value, args)
         return function_raw(*argvals, **kwargs)
     return function_wrapped
+
+
+def backtrace_top_wrapped_args(args):
+    """Backtrace all the wrapped arguments with the largest propagation level.
+
+    Parameters
+    ----------
+    args :
+        All the arguments passed to the function.
+
+    Returns
+    -------
+    top_wrappers, top_propogation_level : List[Tuple[int,Wrapper]], int
+        All the wrapped arguments with their index in args along with their
+        propagation level.
+
+    """
+    top_propogation_level = -1
+    top_wrappers = []
+    for arg_index, arg in enumerate(args):
+        if isinstance(arg, Wrapper):
+            if arg._propogation_level > top_propogation_level:
+                top_wrppers = [(arg_index, arg)]
+                top_propogation_level = arg._propogation_level
+            elif arg._propogation_level == top_propogation_level:
+                top_wrappers.append((arg_index, arg))
+    return top_wrappers, top_propogation_level
