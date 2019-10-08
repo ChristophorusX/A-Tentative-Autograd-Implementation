@@ -31,24 +31,24 @@ class Wrapper(object):
     Equivalent to the Box class in the Autograd implementation.
     """
 
-    def __init__(self, value, node, propogation_level):
+    def __init__(self, value, node, trace_marker):
         self._value = value
         self._node = node
-        self._propogation_level = propogation_level
+        self._trace_marker = trace_marker
 
     def __bool__(self):
         return self._value
 
 
-def new_wrapper(value, propogation_level, node):
+def new_wrapper(value, trace_marker, node):
     """A function that returns a wrapper of certain data type. (TODO)
 
     Parameters
     ----------
     value : float
         Function value evaluated at the node.
-    propogation_level : int
-        The level of propagation from starting node.
+    trace_marker : int
+        Unique identifier for the tracing process.
     node : Node
         The node to be wrapped.
 
@@ -58,7 +58,7 @@ def new_wrapper(value, propogation_level, node):
         A wrapper containing everything about the node in perticular run.
 
     """
-    return Wrapper(value, propogation_level, node)
+    return Wrapper(value, trace_marker, node)
 
 
 def primative(function_raw):
@@ -77,7 +77,7 @@ def primative(function_raw):
 
     """
     def function_wrapped(*args, **kwargs):
-        wrapped_args, propogation_level, node_constructor = backtrace_top_wrapped_args(
+        wrapped_args, trace_marker, node_constructor = backtrace_top_wrapped_args(
             args)
         if wrapped_args:
             num_value_pair = [(argnum, wrapper._value)
@@ -90,7 +90,7 @@ def primative(function_raw):
             result = function_wrapped(*argvals, **kwargs)
             node = Node(result, function_wrapped,
                         argvals, kwargs, argnums, parents)
-            return new_wrapper(result, node, propogation_level)
+            return new_wrapper(result, node, trace_marker)
         else:
             return function_raw(*args, **kwargs)
     function_wrapped.fun = function_raw
@@ -130,18 +130,18 @@ def backtrace_top_wrapped_args(args):
 
     Returns
     -------
-    top_wrappers, top_propogation_level : List[Tuple[int,Wrapper]], int
+    top_wrappers, top_trace_marker : List[Tuple[int,Wrapper]], int
         All the wrapped arguments with their index in args along with their
-        propagation level.
+        trace marker.
 
     """
-    top_propogation_level = -1
+    top_trace_marker = -1
     top_wrappers = []
     for arg_index, arg in enumerate(args):
         if isinstance(arg, Wrapper):
-            if arg._propogation_level > top_propogation_level:
+            if arg._trace_marker > top_trace_marker:
                 top_wrppers = [(arg_index, arg)]
-                top_propogation_level = arg._propogation_level
-            elif arg._propogation_level == top_propogation_level:
+                top_trace_marker = arg._trace_marker
+            elif arg._trace_marker == top_trace_marker:
                 top_wrappers.append((arg_index, arg))
-    return top_wrappers, top_propogation_level
+    return top_wrappers, top_trace_marker
