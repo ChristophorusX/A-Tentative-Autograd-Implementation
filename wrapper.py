@@ -57,9 +57,20 @@ def new_wrapper(value, propogation_level, node):
     return Wrapper(value, propogation_level, node)
 
 
-def primative():
-    """
-    Wrapper for function
+def primative(function_raw):
+    """A wrapper function for primitive function `function_raw`, which builds
+    the graph at the same time.
+
+    Parameters
+    ----------
+    function_raw : function
+        The raw function to be wrapped.
+
+    Returns
+    -------
+    function_wrapped : function
+        A wrapper function that builds the graph when envoked.
+
     """
     def function_wrapped(*args, **kwargs):
         wrapped_args, trace, node_constructor = backtrace_top_wrapped_args(args)
@@ -70,11 +81,32 @@ def primative():
                 return function_wrapped(*argvals, **kwargs)
             parents = tuple(wrapper._node for _, wrapper in wrapped_args)
             argnums = tuple(argnum for argnum, _ in wrapped_args)
-            res = function_wrapped(*argvals, **kwargs)
-            node = node_constructor(ans, function_wrapped, argvals, kwargs, argnums, parents)
-            return new_wrapper(ans, trace, node)
+            result = function_wrapped(*argvals, **kwargs)
+            node = Node(result, function_wrapped, argvals, kwargs, argnums, parents)
+            return new_wrapper(result, trace, node)
         else:
             return function_raw(*args, **kwargs)
     function_wrapped.fun = function_raw
     function_wrapped.is_autograd_primitive = True
+    return function_wrapped
+
+def notrace_primitive(function_raw):
+    """A wrapper function that evaluates with wrapped arguments.
+
+    Parameters
+    ----------
+    function_raw : type
+        A raw function to be wrapped.
+
+    Returns
+    -------
+    function_wrapped : function
+        A function only evaluated without doing any tracing.
+
+    """
+    def function_wrapped(*args, **kwargs):
+        def get_value(x):
+            return get_value(x._value) if isinstance(x,Wrapper) else x
+        argvals = map(get_value, args)
+        return function_raw(*argvals, **kwargs)
     return function_wrapped
