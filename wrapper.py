@@ -113,9 +113,9 @@ def notrace_primitive(function_raw):
 
     """
     def function_wrapped(*args, **kwargs):
-        def get_value(x):
-            return get_value(x._value) if isinstance(x, Wrapper) else x
-        argvals = map(get_value, args)
+        def extract_value(x):
+            return extract_value(x._value) if isinstance(x, Wrapper) else x
+        argvals = map(extract_value, args)
         return function_raw(*argvals, **kwargs)
     return function_wrapped
 
