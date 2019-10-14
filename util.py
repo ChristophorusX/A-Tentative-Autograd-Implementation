@@ -1,4 +1,3 @@
-from wrapper import Node
 
 
 def topological_sort(propagation_end_node):

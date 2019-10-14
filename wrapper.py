@@ -3,7 +3,7 @@ from util import substitute_values
 
 class Node(object):
     """
-    This is a dummy class to be overridden.
+    A basic node that records information about the computational graph.
     """
 
     def __init__(self, parents):
@@ -28,7 +28,7 @@ class Node(object):
 
 class Wrapper(object):
     """
-    Equivalent to the Box class in the Autograd implementation.
+    A wrapper for tracing propagations that wraps the node and tracing information.
     """
 
     def __init__(self, value, node, trace_marker):
@@ -67,10 +67,27 @@ class MarkerStack(object):
         self.trace_marker = -1
 
     def get_marker(self):
-        pass
+        """Get a new trace marker whenever a new forward propagation is triggered.
 
-    def release_marker(self):
-        pass
+        Returns
+        -------
+        trace_marker : int
+            A new trace marker for this envoked propagation.
+
+        """
+        self.trace_marker += 1
+        return self.trace_marker
+
+    def release_marker(self, marker):
+        """Release the current trace marker `marker`.
+
+        Parameters
+        ----------
+        marker : int
+            The current trace marker to be released.
+
+        """
+        self.trace_marker = marker - 1
 
 
 def primative(function_raw):
@@ -133,7 +150,7 @@ def notrace_primitive(function_raw):
 
 
 def backtrace_top_wrapped_args(args):
-    """Backtrace all the wrapped arguments with the largest propagation level.
+    """Backtrace all the wrapped arguments with the most inner layer of propagation.
 
     Parameters
     ----------

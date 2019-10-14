@@ -52,17 +52,17 @@ def forward_propagation(propagation_start_node, func, x):
 
     Parameters
     ----------
-    propagation_start_node : type
-        Description of parameter `propagation_start_node`.
-    func : type
-        Description of parameter `func`.
-    args : type
-        Description of parameter `args`.
+    propagation_start_node : Node
+        The node where the gradient function (or anything similar) is requested.
+    func : function
+        The function to apply at the node (most likely be a composition of functions).
+    x : narray
+        A set of parameters for the function.
 
     Returns
     -------
-    type
-        Description of returned object.
+    Wrapper
+        The ending wrapper wrapping the propagation end node.
 
     """
     trace_marker = marker_stack.get_marker()
