@@ -1,7 +1,10 @@
 from collections import defaultdict
-from wrapper import Node, Wrapper
+from wrapper import Node, Wrapper, new_wrapper
 import numpy as np
 from util import topological_sort
+from wrapper import MarkerStack
+
+marker_stack = MarkerStack()
 
 
 def backpropagation(gradient, propagation_end_node):
@@ -43,7 +46,7 @@ def backpropagation(gradient, propagation_end_node):
     return current_gradient
 
 
-def forward_propagation(propagation_start_node, func, args):
+def forward_propagation(propagation_start_node, func, x):
     """A forward propagation starting at the `propagation_start_node` and
     wrapping the all the composition operations along the way.
 
@@ -62,7 +65,15 @@ def forward_propagation(propagation_start_node, func, args):
         Description of returned object.
 
     """
-    args = list(args)
+    trace_marker = marker_stack.get_marker()
+    propagation_start_wrapper = new_wrapper(
+        x, trace_marker, propagation_start_node)
+    propagation_end_wrapper = func(propagation_start_wrapper)
+    marker_stack.release_marker(trace_marker)
+    if isinstance(propagation_end_wrapper, Wrapper) and propagation_end_wrapper._trace_marker == propagation_start_wrapper.trace_marker:
+        return propagation_end_wrapper._value, propagation_end_wrapper._node
+    else:
+        return propagation_end_wrapper, None
 
 
 def vector_jacobian_product_factory(func, x):

@@ -61,6 +61,18 @@ def new_wrapper(value, trace_marker, node):
     return Wrapper(value, trace_marker, node)
 
 
+class MarkerStack(object):
+
+    def __init__(self):
+        self.trace_marker = -1
+
+    def get_marker(self):
+        pass
+
+    def release_marker(self):
+        pass
+
+
 def primative(function_raw):
     """A wrapper function for primitive function `function_raw`, which builds
     the graph at the same time.
