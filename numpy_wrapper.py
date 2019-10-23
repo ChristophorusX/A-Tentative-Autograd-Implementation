@@ -5,10 +5,12 @@ notrace_functions = [
     np.ndim, np.shape, np.iscomplexobj, np.result_type
 ]
 
+
 def wrap_intdtype(cls):
     class IntdtypeSubclass(cls):
         __new__ = notrace_primitive(cls.__new__)
     return IntdtypeSubclass
+
 
 def wrap_namespace(old, new):
     unchanged_types = {float, int, type(None), type}
@@ -24,4 +26,4 @@ def wrap_namespace(old, new):
         elif type(obj) in unchanged_types:
             new[name] = obj
 
-wrap_namespace(np.__dict__, globals()) # wrap numpy namespace in globals dict
+wrap_namespace(np.__dict__, globals())  # wrap numpy namespace in globals dict

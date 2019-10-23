@@ -10,12 +10,12 @@ def unary_to_nary(unary_operator):
     Parameters
     ----------
     unary_operator : function
-        A unary operator that returns a function taking one argument.
+        A unary operator that takes a function taking one argument.
 
     Returns
     -------
     function
-        Returns a nary operator that takes more than one argument.
+        Returns a nary operator that takes a function taking more than one argument.
 
     """
     def nary_operator(func, arg_index=0, *nary_args, **nary_kwargs):
@@ -40,7 +40,6 @@ def unary_to_nary(unary_operator):
 @unary_to_nary
 def grad(func, arg_index=0):
     """An API for computing gradient function of a function `func`.
-    TODO: implement narray version by a decorator
 
     Parameters
     ----------
