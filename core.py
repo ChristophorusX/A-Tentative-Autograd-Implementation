@@ -104,6 +104,26 @@ def vector_jacobian_product_factory(func, x):
     else:
         return lambda gradient: backpropagation(gradient, propagation_end_node)
 
+def define_vector_jacobian_product(func, *vector_jacobian_product_maker, **kwargs):
+    """Defines the vectorjacobian product for a given primitive function.
+
+    Parameters
+    ----------
+    func : type
+        Description of parameter `func`.
+    *vector_jacobian_product_maker : type
+        Description of parameter `*vector_jacobian_product_maker`.
+    **kwargs : type
+        Description of parameter `**kwargs`.
+
+    Returns
+    -------
+    type
+        Description of returned object.
+
+    """
+    # TODO
+    pass
 
 class VectorJacobianProductNode(Node):
     pass
